@@ -18,20 +18,20 @@ public class Scanner {
         palabrasReservadas = new HashMap<>();
         palabrasReservadas.put("y", TipoToken.Y);
         palabrasReservadas.put("clase", TipoToken.CLASE);
-        /*palabrasReservadas.put("ademas", );
-        palabrasReservadas.put("falso", );
-        palabrasReservadas.put("para", );
-        palabrasReservadas.put("fun", ); //definir funciones
-        palabrasReservadas.put("si", );
-        palabrasReservadas.put("nulo", );
-        palabrasReservadas.put("o", );
-        palabrasReservadas.put("imprimir", );
-        palabrasReservadas.put("retornar", );
-        palabrasReservadas.put("super", );
-        palabrasReservadas.put("este", );
-        palabrasReservadas.put("verdadero", );
-        palabrasReservadas.put("var", ); //definir variables
-        palabrasReservadas.put("mientras", );*/
+        palabrasReservadas.put("ademas", TipoToken.THEN);
+        palabrasReservadas.put("falso", TipoToken.FALSE);
+        palabrasReservadas.put("para", TipoToken.FOR);
+        palabrasReservadas.put("fun", TipoToken.FUNCTION); //definir funciones
+        palabrasReservadas.put("si", TipoToken.IF);
+        palabrasReservadas.put("nulo", TipoToken.NULL);
+        palabrasReservadas.put("o", TipoToken.O);
+        palabrasReservadas.put("imprimir", TipoToken.PRINT);
+        palabrasReservadas.put("retornar", TipoToken.RETURN);
+        palabrasReservadas.put("super", TipoToken.SUPER);
+        palabrasReservadas.put("este", TipoToken.THIS);
+        palabrasReservadas.put("verdadero", TipoToken.TRUE);
+        palabrasReservadas.put("var", TipoToken.VAR); //definir variables
+        palabrasReservadas.put("mientras", TipoToken.WHILE);
     }
 
     Scanner(String source){
@@ -39,15 +39,27 @@ public class Scanner {
     }
 
     List<Token> scanTokens(){
-        //Aquí va el corazón del scanner.
-
-        /*
-        Analizar el texto de entrada para extraer todos los tokens
-        y al final agregar el token de fin de archivo
-         */
+        lines.foreach((nlinea,linea)->{
+            Map<String,TipoToken> tokline = analizar(linea.strip());
+            tokline.foreach((valor,token)->tokens.add(new Token(tipo,lexema,nlinea)));
+        });
         tokens.add(new Token(TipoToken.EOF, "", null, linea));
 
         return tokens;
+    }
+    private Map<String, TipoToken> analyseLine(String line) {
+
+        Map<String, TipoToken> lineaTokens = new HashMap<>();
+        Automata automata = new Automata();
+
+        for (String str : line.split(" ")) {
+            if (keywordsAndOperatorsMap.containsKey(str.toLowerCase()))
+                lineaTokens.put(str, keywordsAndOperatorsMap.get(str.toLowerCase()));
+            else
+                lineaTokens.put(str, automata.evaluar(str));
+        }
+
+        return lineaTokens;
     }
 }
 
