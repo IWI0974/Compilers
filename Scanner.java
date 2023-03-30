@@ -1,9 +1,6 @@
 package al;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Scanner {
 
@@ -38,23 +35,23 @@ public class Scanner {
         this.source = source;
     }
 
-    List<Token> scanTokens(){
-        lines.foreach((nlinea,linea)->{
-            Map<String,TipoToken> tokline = analizar(linea.strip());
-            tokline.foreach((valor,token)->tokens.add(new Token(tipo,lexema,nlinea)));
+    public List<Token> scanTokens(Map<Integer,String> lines){
+        lines.forEach((nlinea,linea)->{
+            Map<String,TipoToken> tokline = analizar(linea.replaceAll(" ", ""));
+            tokline.forEach((valor,token)->tokens.add(new Token(token,valor,null,nlinea)));
         });
         tokens.add(new Token(TipoToken.EOF, "", null, linea));
 
         return tokens;
     }
-    private Map<String, TipoToken> analyseLine(String line) {
+    private Map<String, TipoToken> analizar(String line) {
 
         Map<String, TipoToken> lineaTokens = new HashMap<>();
         Automata automata = new Automata();
 
         for (String str : line.split(" ")) {
-            if (keywordsAndOperatorsMap.containsKey(str.toLowerCase()))
-                lineaTokens.put(str, keywordsAndOperatorsMap.get(str.toLowerCase()));
+            if (palabrasReservadas.containsKey(str.toLowerCase()))
+                lineaTokens.put(str, palabrasReservadas.get(str.toLowerCase()));
             else
                 lineaTokens.put(str, automata.evaluar(str));
         }
